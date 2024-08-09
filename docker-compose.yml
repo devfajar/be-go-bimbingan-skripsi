@@ -1,0 +1,15 @@
+services:
+  postgres:
+    container_name: postgres_bimbingan
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: bimbing4n
+      POSTGRES_DB: bimbingan
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
