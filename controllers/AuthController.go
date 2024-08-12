@@ -100,35 +100,41 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// Set JWT Token to cookie
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-		Secure:   true,
-	}
-	c.Cookie(&cookie)
-
-	// Authentication successful
+	// Return JWT Token in Response Body
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "User successfully logged in",
+		"token":   "Bearer " + token,
 	})
 }
 
 func UserDetail(c *fiber.Ctx) error {
 	fmt.Println("User Detail Request")
 
-	// Retrieve JWT From Cookies
-	cookie := c.Cookies("jwt")
+	// Retrieve JWT From Authorization Header
+	authHeader := c.Get("Authorization")
+	if authHeader == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Missing Authorization Header",
+		})
+	}
 
-	// Parse JWT With claims
-	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+	// Ensure Bearer token format
+	tokenString := ""
+	if len(authHeader) > 7 && authHeader[:7] == "Bearer " {
+		tokenString = authHeader[7:]
+	} else {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Invalid Authorization Format",
+		})
+	}
+
+	// Parse JWT With Claims
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte("secretKey"), nil
 	})
 
-	// Handle Token
-	if err != nil {
+	// Handle Token Parsing Error
+	if err != nil || !token.Valid {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Invalid Token",
 		})
@@ -146,8 +152,14 @@ func UserDetail(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi((*claims)["sub"].(string))
 	user := models.User{ID: uint(id)}
 
-	database.DB.Where("id = ?", uint(id)).First(&user)
+	// Retrieve User Details from Database
+	if err := database.DB.Where("id = ?", uint(id)).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "User Not Found",
+		})
+	}
 
+	// Return User Details as JSON
 	return c.JSON(user)
 }
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/devfajar/go-bimbingan-skripsi/database"
+	"github.com/devfajar/go-bimbingan-skripsi/database/seeds"
 	"github.com/devfajar/go-bimbingan-skripsi/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -14,6 +15,9 @@ func main() {
 	if err != nil {
 		panic("could not connect to database")
 	}
+
+	// Seed The Database
+	seeds.SeedAdminUser()
 
 	// Success Condition
 	fmt.Println("Connection is successful")
