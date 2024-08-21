@@ -30,7 +30,7 @@ func main() {
 		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
 		AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
 		AllowCredentials: true,
-		AllowOrigins:     "http://localhost:8080",
+		AllowOrigins:     "http://localhost:8080, http://localhost:3000",
 	}))
 
 	// Routes

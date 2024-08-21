@@ -58,7 +58,7 @@ func AdminOnly(c *fiber.Ctx) error {
 	}
 
 	// Check if the User's Role is Admin
-	if user.Role.Name != "admin" {
+	if user.Role.Name != "Admin" {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"message": "Access Denied",
 		})

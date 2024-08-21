@@ -15,6 +15,11 @@ func SetUpRoutes(app *fiber.App) {
 	app.Post("/logout", controllers.Logout)
 
 	// Admin Only Can Access This Route
-	adminRoutes.Get("/students", controllers.ListStudent)
+	adminRoutes.Get("/roles", controllers.ListRoles)
+	adminRoutes.Post("/roles", controllers.AddRole)
+	adminRoutes.Put("/roles/:id", controllers.UpdateRole)
+	adminRoutes.Delete("/roles/:id", controllers.DeleteRole)
+	// Endpoint CRUD Users
+	adminRoutes.Get("/users", controllers.ListUser)
 
 }
